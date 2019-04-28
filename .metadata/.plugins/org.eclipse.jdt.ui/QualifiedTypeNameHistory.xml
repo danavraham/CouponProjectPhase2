@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qualifiedTypeNameHistroy>
+<fullyQualifiedTypeName name="com.dan.Coupons.exceptions.ApplicationException"/>
+<fullyQualifiedTypeName name="com.dan.Coupons.logic.CompaniesController"/>
+<fullyQualifiedTypeName name="com.dan.Coupons.enums.Category"/>
+<fullyQualifiedTypeName name="org.springframework.stereotype.Controller"/>
+<fullyQualifiedTypeName name="org.springframework.beans.factory.annotation.Autowired"/>
+<fullyQualifiedTypeName name="org.springframework.stereotype.Repository"/>
+<fullyQualifiedTypeName name="com.dan.Coupons.beans.Company"/>
+<fullyQualifiedTypeName name="com.dan.Coupons.logic.ICacheManager"/>
+<fullyQualifiedTypeName name="org.springframework.stereotype.Component"/>
+<fullyQualifiedTypeName name="java.util.Map"/>
+<fullyQualifiedTypeName name="java.util.HashMap"/>
+</qualifiedTypeNameHistroy>

@@ -1,0 +1,45 @@
+package com.dan.Coupons.beans;
+
+import com.dan.Coupons.enums.ClientType;
+
+//This class is for the server side use, to check authentication in requests
+public class PostLoginCachedUserData {
+
+	//--------------------------------------Properties------------------------------
+	private long userId;
+	private Long companyId;
+	private ClientType clientType;
+
+	//--------------------------------------CTOR------------------------------
+	public PostLoginCachedUserData(long userId, Long companyId, ClientType clientType) {
+		this.userId = userId;
+		this.companyId = companyId;
+		this.clientType = clientType;
+	}
+
+	//--------------------------------------G&S's------------------------------
+	public long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(long userId) {
+		this.userId = userId;
+	}
+
+	public Long getCompanyId() {
+		return companyId;
+	}
+
+	public void setCompanyId(Long companyId) {
+		this.companyId = companyId;
+	}
+
+	public ClientType getType() {
+		return clientType;
+	}
+
+	public void setType(ClientType type) {
+		this.clientType = type;
+	}
+
+}

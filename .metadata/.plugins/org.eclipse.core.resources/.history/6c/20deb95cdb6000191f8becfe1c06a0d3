@@ -1,0 +1,5 @@
+package com.dan.Coupons.beans;
+
+public class UserData {
+
+}

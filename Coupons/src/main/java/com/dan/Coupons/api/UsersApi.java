@@ -1,0 +1,62 @@
+package com.dan.Coupons.api;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.dan.Coupons.beans.LoginData;
+import com.dan.Coupons.beans.User;
+import com.dan.Coupons.enums.ClientType;
+import com.dan.Coupons.exceptions.ApplicationException;
+import com.dan.Coupons.logic.UsersController;
+
+@RestController
+@RequestMapping("/Users")
+public class UsersApi {
+
+	@Autowired
+	private UsersController usersController;
+
+	@PostMapping
+	public ClientType login(@RequestBody LoginData loginData) throws ApplicationException {
+		return this.usersController.login(loginData.getUserName(), loginData.getPassword());
+	}
+
+	@PostMapping
+	public void createUser(@RequestBody User user) throws ApplicationException {
+		this.usersController.createUser(user);
+		System.out.println("createUser " + user);
+	}
+
+	@PutMapping
+	public void updateUser(@RequestBody User user) throws ApplicationException {
+		this.usersController.updateUser(user);
+		System.out.println("updateUser " + user);
+	}
+
+	@DeleteMapping("/{userID}")
+	public void deleteUserByID(@PathVariable("userID") long userID) throws ApplicationException {
+		this.usersController.deleteUserByID(userID);
+		System.out.println("deleteUserByID " + userID);
+	}
+
+	@GetMapping("/{userID}")
+	public User getOneUserByID(@PathVariable("userID") long userID) throws ApplicationException {
+		System.out.println("getOneUserByID " + userID);
+		return this.usersController.getOneUserByID(userID);
+	}
+
+	@GetMapping("/allUsers")
+	public List<User> getAllUsers() throws ApplicationException {
+		System.out.println("getAllUsers");
+		return this.usersController.getAllUsers();
+	}
+}

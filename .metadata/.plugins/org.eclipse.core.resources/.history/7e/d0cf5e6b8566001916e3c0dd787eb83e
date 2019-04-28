@@ -1,0 +1,59 @@
+package com.dan.Coupons.api;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.dan.Coupons.logic.CompaniesController;
+import com.dan.Coupons.beans.Company;
+import com.dan.Coupons.exceptions.ApplicationException;
+
+@RestController
+@RequestMapping("/Companies")
+public class CompaniesApi {
+
+	@Autowired
+	private CompaniesController companiesController;
+
+	@PostMapping
+	public void createCompany(@RequestBody Company company) throws ApplicationException {
+		this.companiesController.createCompany(company);
+		System.out.println("createCompany" + company);
+	}
+
+	@PutMapping
+	public void updateCompany(@RequestBody Company company) throws ApplicationException {
+		this.companiesController.updateCompany(company);
+		System.out.println("updateCompany" + company);
+	}
+
+	@DeleteMapping("/{companyID}")
+	public void deleteCompanyByID(@PathVariable("companyID") long companyID) throws ApplicationException {
+		this.companiesController.deleteCompanyByID(companyID);
+		System.out.println("deleteCompanyByID" + companyID);
+	}
+
+	@GetMapping("/{companyID}")
+	public Company getOneCompanyByID(@PathVariable("companyID") long companyID) throws ApplicationException {
+		System.out.println("getOneCompanyByID" + companyID);
+		return this.companiesController.getOneCompanyByID(companyID);
+	}
+
+	@GetMapping("/allCompanies")
+	public List<Company> getAllCompanies() throws ApplicationException {
+		System.out.println("getAllCompanies");
+		return this.companiesController.getAllCompanies();
+	}
+	
+	
+	
+
+}

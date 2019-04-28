@@ -1,0 +1,547 @@
+package com.dan.Coupons.dao;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.stereotype.Repository;
+
+import com.dan.Coupons.beans.Coupon;
+import com.dan.Coupons.beans.Purchase;
+import com.dan.Coupons.enums.Category;
+import com.dan.Coupons.enums.ErrorTypes;
+import com.dan.Coupons.exceptions.ApplicationException;
+import com.dan.Coupons.utils.JdbcUtils;
+
+@Repository
+public class PurchasesDao implements IPurchasesDao {
+
+	public long createPurchase(Purchase purchase) throws ApplicationException {
+		// Turn on the connections
+		Connection connection = null;
+		PreparedStatement preparedStatement = null;
+		String sqlStatement = "";
+
+		try {
+			// Establish a connection from the connection manager
+			connection = JdbcUtils.getConnection();
+
+			// Creating the SQL query
+			// PurchasID is defined as a primary key and auto incremented
+			sqlStatement = "INSERT INTO purchases (CustomerID, CouponID, PurchaseAmount) VALUES(?,?,?)";
+
+			// Combining between the syntax and our connection
+			preparedStatement = connection.prepareStatement(sqlStatement, PreparedStatement.RETURN_GENERATED_KEYS);
+
+			// Replacing the question marks in the statement above with the relevant data
+			preparedStatement.setLong(1, purchase.getCustomerID());
+			preparedStatement.setLong(2, purchase.getCouponID());
+			preparedStatement.setInt(3, purchase.getAmount());
+
+			// Executing the update
+			preparedStatement.executeUpdate();
+
+			ResultSet resultSet = preparedStatement.getGeneratedKeys();
+
+			// If the purchase was created, returning the purchase ID
+			if (resultSet.next()) {
+				long purchaseID = resultSet.getLong(1);
+				purchase.setPurchaseID(purchaseID);
+				return purchaseID;
+			}
+			throw new ApplicationException(ErrorTypes.FAIL_TO_GENERATE_ID, "Couldent generate a purchase ID");
+
+		} catch (SQLException e) {
+			// If there was an exception in the "try" block above, it is caught here and
+			// notifies a level above.
+			throw new ApplicationException(e, ErrorTypes.GENERAL_ERROR, "Failed to create new purchase");
+
+		} finally {
+			// Closing the resources
+			JdbcUtils.closeResources(connection, preparedStatement);
+		}
+	}
+
+	public void deletePurchasesByCompanyID(long companyID) throws ApplicationException {
+		// Turn on the connections
+		Connection connection = null;
+		PreparedStatement preparedStatement = null;
+		String sqlStatement = "";
+
+		try {
+			// Establish a connection from the connection manager
+			connection = JdbcUtils.getConnection();
+
+			// Creating the SQL query
+			sqlStatement = "DELETE FROM purchases WHERE CouponID IN (SELECT CouponID FROM coupons WHERE CompanyID=?)";
+
+			// Combining between the syntax and our connection
+			preparedStatement = connection.prepareStatement(sqlStatement);
+
+			// Replacing the question marks in the statement above with the relevant data
+			preparedStatement.setLong(1, companyID);
+
+			// Executing the update
+			preparedStatement.executeUpdate();
+
+		} catch (SQLException e) {
+			// If there was an exception in the "try" block above, it is caught here and
+			// notifies a level above.
+			throw new ApplicationException(e, ErrorTypes.GENERAL_ERROR, "Failed to delete Purchase");
+		} finally {
+			// Closing the resources
+			JdbcUtils.closeResources(connection, preparedStatement);
+		}
+	}
+
+	public void deletePurchasesByCustomerID(long customerID) throws ApplicationException {
+		// Turn on the connections
+		Connection connection = null;
+		PreparedStatement preparedStatement = null;
+		String sqlStatement = "";
+
+		try {
+			// Establish a connection from the connection manager
+			connection = JdbcUtils.getConnection();
+
+			// Creating the SQL query
+			sqlStatement = "DELETE FROM purchases WHERE CustomerID=?";
+
+			// Combining between the syntax and our connection
+			preparedStatement = connection.prepareStatement(sqlStatement);
+
+			// Replacing the question marks in the statement above with the relevant data
+			preparedStatement.setLong(1, customerID);
+
+			// Executing the update
+			preparedStatement.executeUpdate();
+
+		} catch (SQLException e) {
+			// If there was an exception in the "try" block above, it is caught here and
+			// notifies a level above.
+			throw new ApplicationException(e, ErrorTypes.GENERAL_ERROR, "Failed to delete Purchase");
+		} finally {
+			// Closing the resources
+			JdbcUtils.closeResources(connection, preparedStatement);
+		}
+	}
+
+	public void deletePurchasesByCouponID(long couponID) throws ApplicationException {
+		// Turn on the connections
+		Connection connection = null;
+		PreparedStatement preparedStatement = null;
+		String sqlStatement = "";
+
+		try {
+			// Establish a connection from the connection manager
+			connection = JdbcUtils.getConnection();
+
+			// Creating the SQL query
+			sqlStatement = "DELETE FROM purchases WHERE CouponID=?";
+
+			// Combining between the syntax and our connection
+			preparedStatement = connection.prepareStatement(sqlStatement);
+
+			// Replacing the question marks in the statement above with the relevant data
+			preparedStatement.setLong(1, couponID);
+
+			// Executing the update
+			preparedStatement.executeUpdate();
+
+		} catch (SQLException e) {
+			// If there was an exception in the "try" block above, it is caught here and
+			// notifies a level above.
+			throw new ApplicationException(e, ErrorTypes.GENERAL_ERROR, "Failed to delete purchase");
+		} finally {
+			// Closing the resources
+			JdbcUtils.closeResources(connection, preparedStatement);
+		}
+
+	}
+
+	public void updateCouponAmountAfterPurchase(long couponId, int amountToReduce) throws ApplicationException {
+		// Turn on the connections
+		Connection connection = null;
+		PreparedStatement preparedStatement = null;
+		String sqlStatement = "";
+
+		try {
+			// Establish a connection from the connection manager
+			connection = JdbcUtils.getConnection();
+
+			// Creating the SQL query
+			sqlStatement = "UPDATE coupons SET CouponAmount=CouponAmount-?  WHERE CouponID=?";
+
+			// Combining between the syntax and our connection
+			preparedStatement = connection.prepareStatement(sqlStatement);
+
+			// Replacing the question marks in the statement above with the relevant data
+			preparedStatement.setInt(1, amountToReduce);
+			preparedStatement.setLong(2, couponId);
+
+			// Executing the update
+			preparedStatement.executeUpdate();
+
+		} catch (SQLException e) {
+			// If there was an exception in the "try" block above, it is caught here and
+			// notifies a level above.
+			throw new ApplicationException(e, ErrorTypes.GENERAL_ERROR,
+					"Could not update coupon amount after purchase");
+		} finally {
+			// Closing the resources
+			JdbcUtils.closeResources(connection, preparedStatement);
+		}
+	}
+
+	public Coupon getOnePurchaseByPurchaseID(long purchaseID) throws ApplicationException {
+		// Turn on the connections
+		Connection connection = null;
+		PreparedStatement preparedStatement = null;
+		String sqlStatement = "";
+
+		try {
+			// Establish a connection from the connection manager
+			connection = JdbcUtils.getConnection();
+
+			// Creating the SQL query
+			sqlStatement = "SELECT * FROM coupons WHERE CouponID IN(SELECT CouponID FROM purchases WHERE PurchaseID=?)";
+
+			// Combining between the syntax and our connection
+			preparedStatement = connection.prepareStatement(sqlStatement);
+
+			// Replacing the question marks in the statement above with the relevant data
+
+			preparedStatement.setLong(1, purchaseID);
+
+			// Execute the Query and saving the results
+			ResultSet resultSet = preparedStatement.executeQuery();
+			// If it was successful, return the Object
+			if (resultSet.next()) {
+
+				// Send the ResultSet to the function that creates a coupon Object from it, if
+				// not - return NULL
+				return createCouponFromResultSet(resultSet);
+			} else {
+				return null;
+			}
+
+		} catch (SQLException e) {
+			// If there was an exception in the "try" block above, it is caught here and
+			// notifies a level above.
+			throw new ApplicationException(e, ErrorTypes.GENERAL_ERROR, "Could not get a coupon purchase ID");
+		} finally {
+
+			// Closing the resources
+			JdbcUtils.closeResources(connection, preparedStatement);
+		}
+	}
+
+	public List<Coupon> getAllPurchases() throws ApplicationException {
+		// Turn on the connections
+		Connection connection = null;
+		PreparedStatement preparedStatement = null;
+		String sqlStatement = "";
+		List<Coupon> couponsList = new ArrayList<Coupon>();
+
+		try {
+			// Establish a connection from the connection manager
+			connection = JdbcUtils.getConnection();
+
+			// Creating the SQL query
+			sqlStatement = "SELECT * FROM coupons WHERE CouponID IN(SELECT CouponID FROM purchases)";
+			// Combining between the syntax and our connection
+			preparedStatement = connection.prepareStatement(sqlStatement);
+
+			// Execute the Query and saving the results
+			ResultSet resultSet = preparedStatement.executeQuery();
+
+			// Run on a while loop as long as there are coupons
+			while (resultSet.next()) {
+				// Send the ResultSet to the function that creates a Coupon Object from it
+				Coupon coupon = new Coupon();
+				coupon = createCouponFromResultSet(resultSet);
+
+				// Add the coupon created to the coupon ArrayList
+				couponsList.add(coupon);
+
+			}
+
+			// Return the ArrayList of the coupons
+			return couponsList;
+
+		} catch (SQLException e) {
+			// If there was an exception in the "try" block above, it is caught here and
+			// notifies a level above.
+			throw new ApplicationException(e, ErrorTypes.GENERAL_ERROR, "Could not get the purchased coupons list");
+		} finally {
+
+			// Closing the resources
+			JdbcUtils.closeResources(connection, preparedStatement);
+		}
+
+	}
+
+	public List<Coupon> getAllPurchasesByCustomerID(long customerID) throws ApplicationException {
+		// Turn on the connections
+		Connection connection = null;
+		PreparedStatement preparedStatement = null;
+		String sqlStatement = "";
+		List<Coupon> couponsList = new ArrayList<Coupon>();
+
+		try {
+			// Establish a connection from the connection manager
+			connection = JdbcUtils.getConnection();
+
+			// Creating the SQL query
+			sqlStatement = "SELECT * FROM coupons WHERE CouponID IN(SELECT CouponID FROM purchases WHERE CustomerID=?)";
+
+			// Combining between the syntax and our connection
+			preparedStatement = connection.prepareStatement(sqlStatement);
+
+			// Replacing the question marks in the statement above with the relevant data
+			preparedStatement.setLong(1, customerID);
+
+			// Execute the Query and saving the results
+			ResultSet resultSet = preparedStatement.executeQuery();
+
+			// Run on a while loop as long as there are Coupons
+			while (resultSet.next()) {
+				// Send the ResultSet to the function that creates a Coupon Object from it
+				Coupon coupon = new Coupon();
+				coupon = createCouponFromResultSet(resultSet);
+
+				// Add the coupons created to the coupons ArrayList
+				couponsList.add(coupon);
+			}
+			// Return the ArrayList of the coupons
+			return couponsList;
+
+		} catch (SQLException e) {
+			// If there was an exception in the "try" block above, it is caught here and
+			// notifies a level above.
+			throw new ApplicationException(e, ErrorTypes.GENERAL_ERROR,
+					"Could not get the coupon purchases by CustomerID list");
+		} finally {
+
+			// Closing the resources
+			JdbcUtils.closeResources(connection, preparedStatement);
+		}
+
+	}
+
+	public List<Purchase> getAllPurchasesByCouponID(long couponID) throws ApplicationException {
+		// Turn on the connections
+		Connection connection = null;
+		PreparedStatement preparedStatement = null;
+		String sqlStatement = "";
+		List<Purchase> purchasesList = new ArrayList<Purchase>();
+
+		try {
+			// Establish a connection from the connection manager
+			connection = JdbcUtils.getConnection();
+
+			// Creating the SQL query
+			sqlStatement = "SELECT * FROM purchases WHERE CouponID=?";
+
+			// Combining between the syntax and our connection
+			preparedStatement = connection.prepareStatement(sqlStatement);
+
+			// Replacing the question marks in the statement above with the relevant data
+
+			preparedStatement.setLong(1, couponID);
+
+			// Execute the Query and saving the results
+			ResultSet resultSet = preparedStatement.executeQuery();
+
+			// Run on a while loop as long as there are there are coupons
+			while (resultSet.next()) {
+				// Send the ResultSet to the function that creates a Purchase Object from it
+				Purchase purchase = new Purchase();
+				purchase = createPurchaseFromResultSet(resultSet);
+
+				// Add the purchase created to the purchase ArrayList
+				purchasesList.add(purchase);
+			}
+			// Return the ArrayList of the Purchase
+			return purchasesList;
+
+		} catch (SQLException e) {
+			// If there was an exception in the "try" block above, it is caught here and
+			// notifies a level above.
+			throw new ApplicationException(e, ErrorTypes.GENERAL_ERROR,
+					"Could not get the purchases by coupon ID list");
+		} finally {
+
+			// Closing the resources
+			JdbcUtils.closeResources(connection, preparedStatement);
+		}
+
+	}
+
+	public List<Coupon> getAllPurchasesByCustomerIDAndCategory(long customerID, Category category)
+			throws ApplicationException {
+		// Turn on the connections
+		Connection connection = null;
+		PreparedStatement preparedStatement = null;
+		String sqlStatement = "";
+		List<Coupon> couponsList = new ArrayList<Coupon>();
+
+		try {
+			// Establish a connection from the connection manager
+			connection = JdbcUtils.getConnection();
+
+			// Creating the SQL query
+			sqlStatement = "SELECT * FROM coupons WHERE Category=? AND CouponID IN(SELECT CouponID FROM purchases WHERE CustomerID=?)";
+
+			// Combining between the syntax and our connection
+			preparedStatement = connection.prepareStatement(sqlStatement);
+
+			// Replacing the question marks in the statement above with the relevant data
+			preparedStatement.setString(1, category.name());
+			preparedStatement.setLong(2, customerID);
+
+			// Execute the Query and saving the results
+			ResultSet resultSet = preparedStatement.executeQuery();
+
+			while (resultSet.next()) {
+				// Send the ResultSet to the function that creates a Coupon Object from it
+				Coupon coupon = new Coupon();
+				coupon = createCouponFromResultSet(resultSet);
+
+				// Add the coupon created to the purchase ArrayList
+				couponsList.add(coupon);
+			}
+			// Return the ArrayList of the Purchase
+			return couponsList;
+
+		} catch (SQLException e) {
+			// If there was an exception in the "try" block above, it is caught here and
+			// notifies a level above.
+			throw new ApplicationException(e, ErrorTypes.GENERAL_ERROR,
+					"Could not get the coupon purchases by CustomerID and Category list");
+		} finally {
+
+			// Closing the resources
+			JdbcUtils.closeResources(connection, preparedStatement);
+		}
+
+	}
+
+	public List<Coupon> getAllPurchasesByCustomerIDAndMaxPrice(long customerID, Double maxPrice)
+			throws ApplicationException {
+		// Turn on the connections
+		Connection connection = null;
+		PreparedStatement preparedStatement = null;
+		String sqlStatement = "";
+		List<Coupon> couponsList = new ArrayList<Coupon>();
+
+		try {
+			// Establish a connection from the connection manager
+			connection = JdbcUtils.getConnection();
+
+			// Creating the SQL query
+			sqlStatement = "SELECT * FROM coupons WHERE CouponPrice<=? AND CouponID IN(SELECT CouponID FROM purchases WHERE CustomerID=?)";
+			// Combining between the syntax and our connection
+			preparedStatement = connection.prepareStatement(sqlStatement);
+
+			// Replacing the question marks in the statement above with the relevant data
+			preparedStatement.setDouble(1, maxPrice);
+			preparedStatement.setLong(2, customerID);
+
+			// Execute the Query and saving the results
+			ResultSet resultSet = preparedStatement.executeQuery();
+
+			// Run on a while loop as long as there are coupons
+			while (resultSet.next()) {
+				// Send the ResultSet to the function that creates a Coupon Object from it
+				Coupon coupon = new Coupon();
+				coupon = createCouponFromResultSet(resultSet);
+
+				// Add the coupon created to the coupon ArrayList
+				couponsList.add(coupon);
+			}
+			// Return the ArrayList of the Coupons
+			return couponsList;
+
+		} catch (SQLException e) {
+			// If there was an exception in the "try" block above, it is caught here and
+			// notifies a level above.
+			throw new ApplicationException(e, ErrorTypes.GENERAL_ERROR,
+					"Could not get the coupon purchases by CustomerID  and Max Price list");
+		} finally {
+
+			// Closing the resources
+			JdbcUtils.closeResources(connection, preparedStatement);
+		}
+
+	}
+
+	public boolean isPurchaseExistByID(long purchaseID) throws ApplicationException {
+		// Turn on the connections
+		Connection connection = null;
+		PreparedStatement preparedStatement = null;
+		String sqlStatement = "";
+
+		try {
+			// Establish a connection from the connection manager
+			connection = JdbcUtils.getConnection();
+
+			// Creating the SQL query
+			sqlStatement = "SELECT * FROM purchases WHERE PurchaseID=?";
+
+			// Combining between the syntax and our connection
+			preparedStatement = connection.prepareStatement(sqlStatement);
+
+			// Replacing the question marks in the statement above with the relevant data
+			preparedStatement.setLong(1, purchaseID);
+
+			// Executing the query and saving the DB response in the resultSet.
+			ResultSet result = preparedStatement.executeQuery();
+
+			// If purchase exist return true
+			if (result.next()) {
+				return true;
+			}
+
+		} catch (SQLException e) {
+			// If there was an exception in the "try" block above, it is caught here and
+			// notifies a level above.
+			throw new ApplicationException(e, ErrorTypes.GENERAL_ERROR, "could not find if Purchace ID exist");
+		} finally {
+			// Closing the resources
+			JdbcUtils.closeResources(connection, preparedStatement);
+		}
+		return false;
+	}
+
+	private Coupon createCouponFromResultSet(ResultSet resultSet) throws SQLException {
+		Coupon coupon = new Coupon();
+		// Creating the new Coupon to return
+		coupon.setCouponID(resultSet.getLong("CouponId"));
+		coupon.setCompanyID(resultSet.getLong("CompanyID"));
+		coupon.setCategory(Category.valueOf(resultSet.getString("Category")));
+		coupon.setCouponTitle(resultSet.getString("CouponTitle"));
+		coupon.setDescription(resultSet.getString("CouponDescription"));
+		coupon.setStartDate(resultSet.getString("StartDate"));
+		coupon.setEndDate(resultSet.getString("EndDate"));
+		coupon.setAmount(resultSet.getInt("CouponAmount"));
+		coupon.setPrice(resultSet.getDouble("CouponPrice"));
+		coupon.setImage(resultSet.getString("CouponImage"));
+
+		return coupon;
+	}
+
+	private Purchase createPurchaseFromResultSet(ResultSet resultSet) throws SQLException, ApplicationException {
+		Purchase purchase = new Purchase();
+		// Creating the new Purchase to return
+		purchase.setPurchaseID(resultSet.getLong("PurchaseID"));
+		purchase.setCustomerID(resultSet.getLong("CustomerID"));
+		purchase.setAmount(resultSet.getInt("PurchaseAmount"));
+		purchase.setCouponID(resultSet.getLong("CouponID"));
+		return purchase;
+	}
+
+}

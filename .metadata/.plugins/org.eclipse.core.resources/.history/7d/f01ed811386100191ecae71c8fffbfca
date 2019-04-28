@@ -1,0 +1,5 @@
+package com.dan.Coupons.logic;
+
+public class CacheManager {
+
+}

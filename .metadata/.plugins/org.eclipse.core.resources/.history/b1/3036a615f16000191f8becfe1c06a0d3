@@ -1,0 +1,46 @@
+package com.dan.Coupons.api;
+
+public class CustomersApi {
+
+}
+
+
+
+@RestController
+@RequestMapping("/Companies")
+public class CompanyApi {
+
+	@Autowired
+	private CompaniesController companiesController;
+
+	@PostMapping
+	public void createCompany(@RequestBody Company company) throws ApplicationException {
+		this.companiesController.createCompany(company);
+		System.out.println("createCompany" + company);
+	}
+
+	@PutMapping
+	public void updateCompany(@RequestBody Company company) throws ApplicationException {
+		this.companiesController.updateCompany(company);
+		System.out.println("updateCompany" + company);
+	}
+
+	@DeleteMapping("/{companyID}")
+	public void deleteCompanyByID(@PathVariable("companyID") long companyID) throws ApplicationException {
+		this.companiesController.deleteCompanyByID(companyID);
+		System.out.println("deleteCompanyByID" + companyID);
+	}
+
+	@GetMapping("/{companyID}")
+	public Company getOneCompanyByID(@PathVariable("companyID") long companyID) throws ApplicationException {
+		System.out.println("getOneCompanyByID" + companyID);
+		return this.companiesController.getOneCompanyByID(companyID);
+	}
+
+	@GetMapping("/allCompanies")
+	public List<Company> getAllCompanies() throws ApplicationException {
+		System.out.println("getAllCompanies");
+		return this.companiesController.getAllCompanies();
+	}
+
+}

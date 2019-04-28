@@ -1,0 +1,59 @@
+package com.dan.Coupons.api;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.dan.Coupons.beans.Customer;
+import com.dan.Coupons.beans.Purchase;
+import com.dan.Coupons.exceptions.ApplicationException;
+import com.dan.Coupons.logic.CustomersController;
+import com.dan.Coupons.logic.PurchasesController;
+
+
+@RestController
+@RequestMapping("/Purchases")
+public class PurchasesApi {
+
+	@Autowired
+	private PurchasesController purchasesController;
+
+	@PostMapping
+	public void createPurchase(@RequestBody Purchase purchase) throws ApplicationException {
+		this.purchasesController.createPurchase(purchase);
+		System.out.println("createPurchase" + purchase);
+	}
+
+	@PutMapping
+	public void updateCustomer(@RequestBody Purchase purchase) throws ApplicationException {
+		this.customersController.updateCustomer(customer);
+		System.out.println("updateCustomer" + purchase);
+	}
+
+	@DeleteMapping("/{customerID}")
+	public void deleteCustomerByID(@PathVariable("customerID") long customerID) throws ApplicationException {
+		this.customersController.deleteCustomerByID(customerID);
+		System.out.println("deleteCustomerByID" + customerID);
+	}
+
+	@GetMapping("/{customerID}")
+	public Customer getOneCustomerByID(@PathVariable("customerID") long customerID) throws ApplicationException {
+		System.out.println("getOneCustomerByID" + customerID);
+		return this.customersController.getOneCustomerByID(customerID);
+	}
+
+	@GetMapping("/allCustomers")
+	public List<Customer> getAllCustomers() throws ApplicationException {
+		System.out.println("getAllCustomers");
+		return this.customersController.getAllCustomers();
+	}
+
+}

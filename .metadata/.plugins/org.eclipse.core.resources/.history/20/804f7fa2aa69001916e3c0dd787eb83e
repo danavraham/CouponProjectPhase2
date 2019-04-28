@@ -1,0 +1,95 @@
+package com.dan.Coupons.api;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.dan.Coupons.exceptions.ApplicationException;
+import com.dan.Coupons.beans.Coupon;
+import com.dan.Coupons.enums.Category;
+import com.dan.Coupons.logic.CouponsController;
+
+@RestController
+@RequestMapping("/coupons")
+public class CouponsApi {
+
+	@Autowired
+	private CouponsController couponsController;
+
+	@PostMapping
+	public void createCoupon(@RequestBody Coupon coupon) throws ApplicationException {
+		this.couponsController.createCoupon(coupon);
+		System.out.println("createCoupon" + coupon);
+	}
+	
+	@PutMapping
+	public void updateCoupon(@RequestBody Coupon coupon) throws ApplicationException {
+		this.couponsController.updateCoupon(coupon);
+		System.out.println("updateCoupon" + coupon);
+	}
+
+	@DeleteMapping("/{couponID}")
+	public void deleteCoupon(@PathVariable("couponID") long couponID) throws ApplicationException {
+		this.couponsController.deleteCouponByID(couponID);
+		System.out.println("deleteCouponByID");
+	}
+
+	
+	@GetMapping("/{couponID}")
+	public Coupon getCoupon(@PathVariable("couponID") long couponID) throws ApplicationException {
+		System.out.println("getOneCouponByID");
+		return this.couponsController.getOneCouponByID(couponID);
+	}
+	
+	
+	
+	
+//	@GetMapping("/allCoupons")
+//	public List<Coupon> getAllCoupons() throws ApplicationException {
+//		System.out.println("getAllCoupons");
+//		return this.couponsController.getAllCoupons();
+//	}
+
+//	@GetMapping("/byType")
+//	// @RequestParam = get the value from the query string
+//	public void getCouponByType(@RequestParam("type") CouponType couponType) {
+//		System.out.println(couponType);
+//	}
+	
+//	@GetMapping("/byCompanyID")
+//	public List<Coupon> getAllCouponsByCompanyID(@RequestParam("CompanyID") long companyID) throws ApplicationException {
+//		return this.couponsController.getAllCouponsByCompanyID(companyID);
+//	}
+	
+//	@GetMapping("/byCategoryAndCompanyID")
+//	public List<Coupon> getAllCouponsByCategoryAndCompanyID(@RequestParam("Category")@RequestParam("CompanyID")Category category, long companyID)
+//			throws ApplicationException {
+//		// Call the 'getAllCouponsByCategoryAndCompanyID' method from the couponsDao
+//		return this.couponsDao.getAllCouponsByCategoryAndCompanyID(category, companyID);
+//	}
+//
+//	public List<Coupon> getAllCouponsByMaxPriceAndCompanyID(Double maxPrice, long companyID)
+//			throws ApplicationException {
+//		// Call the 'getAllCouponsByMaxPriceAndCompanyID' method from the couponsDao
+//		return this.couponsDao.getAllCouponsByMaxPriceAndCompanyID(maxPrice, companyID);
+//	}
+//
+//	public List<Coupon> getAllCouponsByCategory(Category category) throws ApplicationException {
+//		// Call the 'getAllCouponsByCategory' method from the couponsDao
+//		return this.couponsDao.getAllCouponsByCategory(category);
+//	}
+//
+//	public List<Coupon> getAllCouponsByMaxPrice(Double maxPrice) throws ApplicationException {
+//		// Call the 'getAllCouponsByMaxPrice' method from the couponsDao
+//		return this.couponsDao.getAllCouponsByMaxPrice(maxPrice);
+//	}
+}

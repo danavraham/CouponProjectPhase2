@@ -1,0 +1,11 @@
+package com.dan.Coupons.logic;
+
+import org.springframework.stereotype.Component;
+
+
+public interface ICacheManager {
+
+	public void put(Object key, Object value);
+	public Object get(Object key);
+	
+}
